@@ -1,0 +1,17 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Environments
+.env
+venv/
+.venv/
+
+# IDE / OS noise
+.vscode/
+.idea/
+.DS_Store
+
+# Local data (Module 1 JSON storage)
+app/storage/*.json
