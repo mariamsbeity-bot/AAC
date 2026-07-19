@@ -5,85 +5,119 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Tracker</title>
     <style>
+        :root {
+            color-scheme: light;
+            --bg-surface: #f8fafc;
+            --bg-panel: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --border: rgba(15, 23, 42, 0.08);
+            --primary: #4f51f7;
+            --primary-soft: #eef2ff;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --shadow: 0 24px 80px rgba(15, 23, 42, 0.08);
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
         * {
             box-sizing: border-box;
         }
 
+        html, body {
+            min-height: 100%;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
+            background: radial-gradient(circle at top left, rgba(79, 81, 247, 0.12), transparent 24%),
+                radial-gradient(circle at top right, rgba(16, 185, 129, 0.12), transparent 18%),
+                linear-gradient(180deg, #f8fafc 0%, #eff3f7 100%);
+            color: var(--text-primary);
         }
 
         header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            background: linear-gradient(135deg, #4f51f7 0%, #6673f0 100%);
             color: white;
-            padding: 2rem;
+            padding: 2.5rem 1.5rem;
             text-align: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow);
         }
 
         header h1 {
             margin: 0;
-            font-size: 2rem;
-            font-weight: 700;
+            font-size: clamp(2rem, 4vw, 3.25rem);
+            letter-spacing: -0.04em;
+            line-height: 1.02;
         }
 
         header p {
-            margin: 0.5rem 0 0 0;
-            font-size: 0.95rem;
-            opacity: 0.95;
+            margin: 1rem auto 0;
+            max-width: 760px;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.92);
+            line-height: 1.75;
         }
 
         main {
-            padding: 2rem;
+            padding: 0 1.5rem 2.5rem;
             max-width: 1400px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         .kanban-board {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
         }
 
         .column {
-            background: white;
-            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid var(--border);
+            border-radius: 24px;
             padding: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-            min-height: 500px;
+            box-shadow: 0 24px 80px rgba(15, 23, 42, 0.06);
+            min-height: 520px;
+            display: flex;
+            flex-direction: column;
         }
 
         .column-header {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin: 0 0 1.5rem 0;
-            display: flex;
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 0 0 1.25rem;
+            display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
+            color: var(--text-primary);
         }
 
-                .column-count {
-                    background-color: #e5e7eb;
-                    border-radius: 999px;
-                    color: #6b7280;
-                    font-size: 0.8rem;
-                    font-weight: 600;
-                    padding: 0.2rem 0.6rem;
-                    min-width: 2rem;
-                    text-align: center;
-                }
+        .column-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2.2rem;
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            background-color: rgba(79, 81, 247, 0.12);
+            color: #4338ca;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
 
-                .column-header::before {
-                    content: '';
-                    display: inline-block;
-                    width: 4px;
-                    height: 4px;
-                    border-radius: 50%;
-                    background-color: #667eea;
-                }
+        .column-header::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #4f51f7;
+        }
 
         .column[data-status="InProgress"] .column-header::before {
             background-color: #f59e0b;
@@ -97,44 +131,41 @@
             display: flex;
             flex-direction: column;
             gap: 1rem;
+            flex: 1;
         }
 
         .task-card {
-            background: #fafafa;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            padding: 1rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            background: var(--bg-panel);
+            border: 1px solid rgba(15, 23, 42, 0.06);
+            border-radius: 1.25rem;
+            padding: 1.25rem;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+            box-shadow: 0 18px 32px rgba(15, 23, 42, 0.06);
         }
 
         .task-card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border-color: #d1d5db;
-        }
-
-        .task-card.dragging {
-            opacity: 0.5;
-            box-shadow: none;
+            transform: translateY(-3px);
+            box-shadow: 0 26px 48px rgba(15, 23, 42, 0.12);
+            border-color: rgba(79, 81, 247, 0.18);
         }
 
         .column.drag-over {
-            border: 2px dashed #667eea;
-            background-color: #eff6ff;
+            border-color: rgba(79, 81, 247, 0.4);
+            background-color: #eef2ff;
         }
 
         #status-message {
             margin: 1.5rem auto;
             max-width: 1400px;
             padding: 1rem 1.25rem;
-            border-radius: 8px;
+            border-radius: 18px;
             font-weight: 600;
             display: none;
             white-space: pre-wrap;
         }
 
         #status-message.info {
-            background-color: #eff6ff;
+            background-color: #eef2ff;
             color: #1d4ed8;
             border: 1px solid #bfdbfe;
         }
@@ -149,30 +180,34 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            gap: 0.5rem;
-            margin-bottom: 0.75rem;
+            gap: 1rem;
+            margin-bottom: 0.85rem;
         }
 
         .task-title {
-            font-weight: 600;
-            color: #1f2937;
             margin: 0;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.35;
             flex: 1;
             word-break: break-word;
         }
 
         .task-priority {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
             font-size: 0.75rem;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: 0.03em;
             white-space: nowrap;
         }
 
         .priority-low {
-            background-color: #d1fae5;
+            background-color: #ecfdf5;
             color: #065f46;
         }
 
@@ -187,66 +222,69 @@
         }
 
         .task-description {
-            color: #6b7280;
-            font-size: 0.9rem;
             margin: 0.5rem 0;
-            line-height: 1.4;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.75;
         }
 
         .task-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 1rem;
+            margin-top: auto;
+            gap: 1rem;
             padding-top: 1rem;
-            border-top: 1px solid #e5e7eb;
+            border-top: 1px solid rgba(15, 23, 42, 0.06);
         }
 
         .task-assignee {
-            font-size: 0.85rem;
-            color: #6b7280;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
         }
 
         .assignee-name {
-            font-weight: 500;
-            color: #1f2937;
+            font-weight: 700;
+            color: var(--text-primary);
         }
 
         .task-edit-btn {
-            padding: 0.5rem 1rem;
-            background-color: #667eea;
+            padding: 0.65rem 1.1rem;
+            background-color: var(--primary);
             color: white;
             border: none;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            font-weight: 500;
+            border-radius: 999px;
+            font-size: 0.88rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: background-color 0.2s ease;
+            transition: background-color 0.2s ease, transform 0.2s ease;
         }
 
         .task-edit-btn:hover {
-            background-color: #5568d3;
+            background-color: #3f43d6;
+            transform: translateY(-1px);
         }
 
         .task-edit-btn:active {
-            background-color: #4c5fc7;
+            background-color: #373fc3;
         }
 
         #new-task-btn {
-            margin-top: 1rem;
-            padding: 0.75rem 1.25rem;
+            margin-top: 1.5rem;
+            padding: 0.9rem 1.35rem;
             background-color: #10b981;
             color: white;
             border: none;
             border-radius: 999px;
             font-size: 0.95rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: background-color 0.2s ease;
+            transition: background-color 0.2s ease, transform 0.2s ease;
         }
 
         #new-task-btn:hover {
             background-color: #0f9c6c;
+            transform: translateY(-1px);
         }
 
         .modal-overlay {
@@ -266,11 +304,11 @@
 
         .modal {
             width: 100%;
-            max-width: 560px;
-            background: white;
-            border-radius: 12px;
+            max-width: 580px;
+            background: var(--bg-panel);
+            border-radius: 1rem;
             padding: 1.5rem;
-            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
+            box-shadow: 0 22px 48px rgba(15, 23, 42, 0.16);
         }
 
         .modal-header {
@@ -283,13 +321,13 @@
 
         .modal-header h2 {
             margin: 0;
-            font-size: 1.25rem;
+            font-size: 1.35rem;
         }
 
         .modal-close-btn {
             background: transparent;
             border: none;
-            color: #4b5563;
+            color: #475569;
             font-size: 1.5rem;
             line-height: 1;
             cursor: pointer;
@@ -298,8 +336,8 @@
         .modal-error-message {
             display: none;
             margin-bottom: 1rem;
-            padding: 0.85rem 1rem;
-            border-radius: 8px;
+            padding: 0.95rem 1rem;
+            border-radius: 1rem;
             background-color: #fee2e2;
             color: #991b1b;
             font-size: 0.95rem;
@@ -329,16 +367,16 @@
         label {
             font-size: 0.95rem;
             font-weight: 600;
-            color: #374151;
+            color: #334155;
         }
 
         input[type="text"], textarea, select {
             width: 100%;
-            padding: 0.85rem 0.95rem;
+            padding: 0.95rem 1rem;
             border: 1px solid #d1d5db;
-            border-radius: 8px;
-            background: #f9fafb;
-            color: #111827;
+            border-radius: 14px;
+            background: #f8fafc;
+            color: #0f172a;
             font-size: 0.95rem;
         }
 
@@ -360,25 +398,25 @@
         }
 
         .modal-actions button {
-            padding: 0.85rem 1.25rem;
-            border-radius: 8px;
+            padding: 0.95rem 1.25rem;
+            border-radius: 12px;
             border: none;
             font-weight: 600;
             cursor: pointer;
         }
 
         #modal-submit-btn {
-            background-color: #667eea;
+            background-color: #4f51f7;
             color: white;
         }
 
         #modal-submit-btn:hover {
-            background-color: #5568d3;
+            background-color: #3f43d6;
         }
 
         #modal-cancel-btn {
             background-color: #e5e7eb;
-            color: #374151;
+            color: #334155;
         }
 
         #modal-cancel-btn:hover {
@@ -386,17 +424,29 @@
         }
 
         @media (max-width: 768px) {
+            header {
+                padding: 1.75rem 1rem;
+            }
+
             header h1 {
-                font-size: 1.5rem;
+                font-size: 2rem;
+            }
+
+            header p {
+                font-size: 0.98rem;
             }
 
             main {
-                padding: 1rem;
+                padding: 0 1rem 2rem;
             }
 
             .kanban-board {
                 grid-template-columns: 1fr;
                 gap: 1.5rem;
+            }
+
+            .modal-row {
+                grid-template-columns: 1fr;
             }
         }
     </style>

@@ -152,6 +152,30 @@ def test_patch_same_status_returns_422(client: TestClient, created_task: dict):
     assert "Invalid status transition" in response.json()["detail"]
 
 
+def test_patch_invalid_priority_returns_422(client: TestClient):
+    create_response = client.post(
+        "/tasks",
+        json={"title": "Update priority", "priority": "High"},
+    )
+    assert create_response.status_code == 201
+    task_id = create_response.json()["id"]
+
+    response = client.patch(f"/tasks/{task_id}", json={"priority": "Critical"})
+
+    assert response.status_code == 422
+    body = response.json()
+    assert isinstance(body["detail"], list)
+    assert any(err["loc"][-1] == "priority" for err in body["detail"])
+    assert any(
+        err.get("type") == "enum"
+        and "Input should be" in err.get("msg", "")
+        and "Low" in err.get("msg", "")
+        and "Medium" in err.get("msg", "")
+        and "High" in err.get("msg", "")
+        for err in body["detail"]
+    )
+
+
 # ---------------------------------------------------------------------------
 # DELETE /tasks/{task_id}
 # ---------------------------------------------------------------------------
