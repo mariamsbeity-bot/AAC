@@ -34,6 +34,31 @@ cp .env.example .env        # PowerShell: Copy-Item .env.example .env
 uvicorn app.main:app --reload --port 8000
 ```
 
+The backend will be available at http://127.0.0.1:8000.
+
+## Open the frontend
+
+The frontend is a plain static HTML app in `frontend/index.html`.
+
+Option 1: open `frontend/index.html` directly in your browser.
+
+Option 2: serve the frontend from a simple local server and open the page at `http://127.0.0.1:5500`:
+
+```bash
+cd frontend
+python -m http.server 5500
+```
+
+The frontend expects the backend to be running at `http://127.0.0.1:8000`.
+
+## Run tests
+
+From the project root run:
+
+```bash
+pytest -q
+```
+
 ## Test the health endpoint
 
 ```bash
