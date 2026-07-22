@@ -122,3 +122,82 @@ To Do = 0 (future-dated task excluded), Done = 0 (completed_late task excluded).
 Confirms filter hits the backend `?overdue=true` endpoint correctly.
 
 ---
+# Verification Log — Mid-Course Project
+
+---
+
+## Baseline (before any feature work)
+
+- Branch created: `mid-course-project`
+- Original pytest suite: all passing, 0 failures.
+- Backend: `uvicorn app.main:app --reload` — OK.
+- Frontend: three-column Kanban board, drag-and-drop, modal — all working.
+
+---
+
+## Feature 2: Task Comments
+
+### Full Pytest Suite
+```
+pytest
+40 passed, 2 warnings in 0.55s
+```
+
+New tests added (11, in tests/test_comments.py):
+
+| Test name | What it proves |
+|---|---|
+| test_create_comment_for_existing_task_returns_201 | Valid comment returns 201 with full body |
+| test_create_comment_blank_text_returns_422_naming_text | 422 detail loc names text field |
+| test_create_comment_for_missing_task_returns_404 | Task not found before comment created |
+| test_list_comments_returns_200_and_empty_list_for_task_with_no_comments | Empty list is 200 not 404 |
+| test_list_comments_for_missing_task_returns_404 | 404 on GET comments for missing task |
+| test_list_comments_returns_comments_sorted_by_creation_time | First created = index 0 |
+| test_delete_comment_returns_204_and_comment_is_removed | 204 + comment gone from list |
+| test_delete_comment_with_wrong_task_returns_404 | Ownership check enforced |
+| test_delete_comment_for_missing_task_returns_404 | Task checked before comment |
+| test_delete_nonexistent_comment_returns_404 | Missing comment_id returns 404 |
+| test_delete_task_cascades_comments | Task delete removes all its comments |
+
+### Break Test Evidence
+
+**Break 1 — Ownership check removed in delete_comment:**
+Removed `comment.task_id != task_id` condition so any existing comment_id returned True.
+
+```
+FAILED test_delete_comment_with_wrong_task_returns_404
+       AssertionError: assert 204 == 404
+1 failed, 10 passed in 0.55s
+```
+
+Restored → 40 passed.
+
+![alt text](<Screenshot 2026-07-22 195113.png>) 
+
+![alt text](<Screenshot 2026-07-22 195107.png>)
+
+### Manual Browser Checks — Feature 2
+
+| Check | Expected | Result |
+|---|---|---|
+| Open edit modal — comments load | Existing comments shown with text and timestamp | ✅ Pass |
+| Open edit modal — no comments | "No comments yet." placeholder shown | ✅ Pass |
+| Add comment → 201 | Input clears, list refreshes with new comment | ✅ Pass |
+| Add blank comment | Blocked client-side, "Comment cannot be blank" shown | ✅ Pass |
+| Delete comment → 204 | Comment disappears from list immediately | ✅ Pass |
+| Open create modal | No comments section shown (create mode guard works) | ✅ Pass |
+| Add Comment button click | Does not submit task form (type="button" fix) | ✅ Pass |
+| Cards after feature added | No comment count badges on cards | ✅ Pass |
+| Existing drag-and-drop | Still works after modal changes | ✅ Pass |
+| Overdue filter + due date pills | Still work alongside comments | ✅ Pass |
+
+**Frontend bugs caught on review (before accepting the diff):**
+1. Add Comment button missing `type="button"` — submitted the task form instead of
+   adding a comment. Caught by manual testing; fixed with a targeted follow-up prompt.
+2. Comment count badges added to cards despite the prompt explicitly forbidding them.
+   Caught by reading the diff; removed with a focused bug-fix prompt.
+
+![alt text](image-3.png)
+
+edit modal with comment and
+delete button, modal bottom with Add Comment input, board without comment count badges.

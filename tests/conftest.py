@@ -4,6 +4,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app import storage
+from app.comments_storage import _reset_comments
 from app.main import app
 
 
@@ -11,8 +12,10 @@ from app.main import app
 def _reset_storage():
     """Clear the in-memory store before and after each test."""
     storage._reset()
+    _reset_comments()
     yield
     storage._reset()
+    _reset_comments()
 
 
 @pytest.fixture

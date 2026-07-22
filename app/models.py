@@ -84,3 +84,26 @@ class TaskResponse(BaseModel):
         if self.due_date < utc_today:
             return "completed_late" if self.status == TaskStatus.DONE else "overdue"
         return None
+
+
+class CommentCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    text: str
+
+    @field_validator("text")
+    @classmethod
+    def validate_text(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("text must not be blank")
+        return value
+
+
+class CommentResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    task_id: str
+    text: str
+    created_at: datetime
