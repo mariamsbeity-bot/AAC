@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes.health import router as health_router
 from app.core.config import APP_ENV
 
-from app.models import TaskPriority, TaskResponse, TaskStatus,TaskCreate, TaskUpdate
+from app.models import TaskPriority, TaskResponse, TaskStatus, TaskCreate, TaskUpdate
 from app import storage
 
 from app.business_rules import validate_status_transition
@@ -46,9 +46,10 @@ def create_task(payload: TaskCreate) -> TaskResponse:
 def list_tasks(
     status: TaskStatus | None = None,
     priority: TaskPriority | None = None,
+    overdue: bool | None = None,
 ) -> list[TaskResponse]:
-    """List all tasks, optionally filtered by status and/or priority."""
-    return storage.get_all_tasks(status=status, priority=priority)
+    """List all tasks, optionally filtered by status, priority, and overdue state."""
+    return storage.get_all_tasks(status=status, priority=priority, overdue=overdue)
 
 
 @app.get("/tasks/{task_id}", response_model=TaskResponse, tags=["tasks"])
