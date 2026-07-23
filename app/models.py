@@ -1,10 +1,10 @@
 """Pydantic v2 models and enums for the Task Tracker API (Module 2)."""
 
-from datetime import datetime
+from datetime import date, datetime, timezone
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, computed_field, field_validator
 
 
 class TaskStatus(str, Enum):
@@ -27,6 +27,7 @@ class TaskCreate(BaseModel):
     status: TaskStatus = TaskStatus.TODO
     priority: TaskPriority = TaskPriority.MEDIUM
     assignee: Optional[str] = None
+    due_date: Optional[date] = None
 
     @field_validator("title")
     @classmethod
@@ -47,6 +48,7 @@ class TaskUpdate(BaseModel):
     status: Optional[TaskStatus] = None
     priority: Optional[TaskPriority] = None
     assignee: Optional[str] = None
+    due_date: Optional[date] = None
 
     @field_validator("title")
     @classmethod
@@ -70,5 +72,38 @@ class TaskResponse(BaseModel):
     status: TaskStatus
     priority: TaskPriority
     assignee: Optional[str]
+    due_date: Optional[date] = None
     created_at: datetime
     updated_at: datetime
+
+    @computed_field
+    def due_state(self) -> Optional[str]:
+        if self.due_date is None:
+            return None
+        utc_today = datetime.now(timezone.utc).date()
+        if self.due_date < utc_today:
+            return "completed_late" if self.status == TaskStatus.DONE else "overdue"
+        return None
+
+
+class CommentCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    text: str
+
+    @field_validator("text")
+    @classmethod
+    def validate_text(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("text must not be blank")
+        return value
+
+
+class CommentResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    task_id: str
+    text: str
+    created_at: datetime

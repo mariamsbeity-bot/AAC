@@ -62,6 +62,30 @@
             line-height: 1.75;
         }
 
+        .header-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .filter-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.92);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .filter-toggle input[type="checkbox"] {
+            width: 1rem;
+            height: 1rem;
+            accent-color: white;
+        }
+ 
         main {
             padding: 0 1.5rem 2.5rem;
             max-width: 1400px;
@@ -221,6 +245,44 @@
             color: #991b1b;
         }
 
+        .task-labels {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .task-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: none;
+            letter-spacing: 0.01em;
+            white-space: nowrap;
+        }
+
+        .pill-overdue {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .pill-completed_late {
+            background-color: #f3f4f6;
+            color: #475569;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .task-due-date {
+            margin: 0.75rem 0 0;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
         .task-description {
             margin: 0.5rem 0;
             color: var(--text-secondary);
@@ -294,6 +356,7 @@
             display: none;
             align-items: center;
             justify-content: center;
+            overflow-y: auto;
             padding: 1rem;
             z-index: 20;
         }
@@ -305,10 +368,12 @@
         .modal {
             width: 100%;
             max-width: 580px;
+            max-height: calc(100vh - 2rem);
             background: var(--bg-panel);
             border-radius: 1rem;
             padding: 1.5rem;
             box-shadow: 0 22px 48px rgba(15, 23, 42, 0.16);
+            overflow-y: auto;
         }
 
         .modal-header {
@@ -347,12 +412,95 @@
             display: block;
         }
 
-        .modal-field {
-            display: flex;
-            flex-direction: column;
-            gap: 0.35rem;
-            margin-bottom: 1rem;
-        }
+                .comments-section {
+                    margin-bottom: 1rem;
+                }
+
+                .comments-section.hidden {
+                    display: none;
+                }
+
+                .comments-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.85rem;
+                    margin-top: 0.5rem;
+                }
+
+                .comment-item {
+                    padding: 0.95rem 1rem;
+                    border: 1px solid #e5e7eb;
+                    border-radius: 16px;
+                    background-color: #f8fafc;
+                }
+
+                .comment-text {
+                    margin: 0 0 0.5rem;
+                    color: #0f172a;
+                    line-height: 1.5;
+                    word-break: break-word;
+                }
+
+                .comment-meta {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 1rem;
+                    font-size: 0.85rem;
+                    color: #475569;
+                }
+
+                .comment-delete-btn {
+                    background: transparent;
+                    border: none;
+                    color: #ef4444;
+                    font-weight: 700;
+                    cursor: pointer;
+                    padding: 0.35rem 0.65rem;
+                    border-radius: 999px;
+                }
+
+                .comment-delete-btn:hover {
+                    background: rgba(239, 68, 68, 0.1);
+                }
+
+                .comments-placeholder {
+                    margin: 0.5rem 0 0;
+                    color: #475569;
+                    font-size: 0.95rem;
+                }
+
+                .comment-input-row .comment-input-group {
+                    display: flex;
+                    gap: 0.75rem;
+                    flex-wrap: wrap;
+                }
+
+                .comment-input-row input[type="text"] {
+                    flex: 1;
+                }
+
+                .comment-input-row button {
+                    min-width: 10rem;
+                    padding: 0.95rem 1rem;
+                    border-radius: 14px;
+                    border: none;
+                    background-color: #4f51f7;
+                    color: white;
+                    font-weight: 700;
+                    cursor: pointer;
+                }
+
+                .comment-input-row button:hover {
+                    background-color: #3f43d6;
+                }
+
+                .modal-field {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.35rem;
+                    margin-bottom: 1rem;
+                }
 
         .modal-row {
             display: grid;
@@ -455,7 +603,13 @@
     <header>
         <h1>Task Tracker</h1>
         <p>Manage your tasks across To Do, In Progress, and Done</p>
-        <button id="new-task-btn" type="button">New Task</button>
+        <div class="header-actions">
+            <label class="filter-toggle">
+                <input type="checkbox" id="overdue-filter-checkbox">
+                Overdue tasks only
+            </label>
+            <button id="new-task-btn" type="button">New Task</button>
+        </div>
     </header>
 
     <div id="modal-overlay" class="modal-overlay" aria-hidden="true">
@@ -497,6 +651,26 @@
                 <div class="modal-field">
                     <label for="task-assignee">Assignee</label>
                     <input type="text" id="task-assignee" name="assignee" autocomplete="off">
+                </div>
+                <div class="modal-field">
+                    <label for="task-due-date">Due Date</label>
+                    <input type="date" id="task-due-date" name="due_date">
+                </div>
+                <div id="comments-section" class="comments-section hidden">
+                    <div class="modal-field">
+                        <label>Comments</label>
+                        <div id="comments-fetch-error" class="field-error"></div>
+                        <div id="comments-list" class="comments-list" aria-live="polite"></div>
+                        <p id="comments-placeholder" class="comments-placeholder"></p>
+                    </div>
+                    <div class="modal-field comment-input-row">
+                        <label for="comment-input">Add Comment</label>
+                        <div class="comment-input-group">
+                            <input type="text" id="comment-input" autocomplete="off" placeholder="Write a comment...">
+                            <button id="comment-add-btn" type="button">Add Comment</button>
+                        </div>
+                        <div id="comment-input-error" class="field-error"></div>
+                    </div>
                 </div>
                 <div class="modal-actions">
                     <button type="submit" id="modal-submit-btn">Save Task</button>
@@ -544,9 +718,19 @@
        const statusSelect = document.querySelector('#task-status');
        const prioritySelect = document.querySelector('#task-priority');
        const assigneeInput = document.querySelector('#task-assignee');
+       const dueDateInput = document.querySelector('#task-due-date');
+       const commentsSection = document.querySelector('#comments-section');
+       const commentsFetchError = document.querySelector('#comments-fetch-error');
+       const commentsList = document.querySelector('#comments-list');
+       const commentsPlaceholder = document.querySelector('#comments-placeholder');
+       const commentInput = document.querySelector('#comment-input');
+       const commentAddBtn = document.querySelector('#comment-add-btn');
+       const commentInputError = document.querySelector('#comment-input-error');
+       const overdueFilterCheckbox = document.querySelector('#overdue-filter-checkbox');
        const taskIdInput = document.querySelector('#task-id');
        const titleError = document.querySelector('#task-title-error');
        let currentMode = 'create';
+       let showOverdueOnly = false;
        let currentTask = null;
 
        function escapeHtml(text) {
@@ -573,6 +757,180 @@
            modalError.textContent = '';
            modalError.classList.remove('active');
            titleError.textContent = '';
+           if (commentInputError) {
+               commentInputError.textContent = '';
+           }
+           if (commentsFetchError) {
+               commentsFetchError.textContent = '';
+           }
+       }
+
+       function setCommentsSectionVisible(visible) {
+           if (!commentsSection) return;
+           commentsSection.classList.toggle('hidden', !visible);
+       }
+
+       function clearCommentsSection() {
+           if (!commentsList || !commentsPlaceholder) return;
+           commentsList.innerHTML = '';
+           commentsPlaceholder.textContent = '';
+           if (commentInput) {
+               commentInput.value = '';
+           }
+           if (commentInputError) {
+               commentInputError.textContent = '';
+           }
+           if (commentsFetchError) {
+               commentsFetchError.textContent = '';
+           }
+       }
+
+       async function fetchAndRenderComments(taskId) {
+           if (!commentsSection || !commentsList || !commentsPlaceholder) return;
+           commentsList.innerHTML = '';
+           commentsPlaceholder.textContent = 'Loading comments...';
+           commentsFetchError.textContent = '';
+
+           try {
+               const response = await fetch(`${API_BASE_URL}/tasks/${encodeURIComponent(taskId)}/comments`);
+               if (!response.ok) {
+                   throw new Error(`HTTP error ${response.status}`);
+               }
+
+               const comments = await response.json();
+               renderComments(comments, taskId);
+           } catch (error) {
+               console.error('Error loading comments:', error);
+               commentsList.innerHTML = '';
+               commentsPlaceholder.textContent = '';
+               commentsFetchError.textContent = 'Unable to load comments. Please try again.';
+           }
+       }
+
+       function formatCommentCreatedAt(value) {
+           const date = new Date(value);
+           const pad = n => String(n).padStart(2, '0');
+           return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+       }
+
+       function renderComments(comments, taskId) {
+           if (!commentsList || !commentsPlaceholder) return;
+           commentsList.innerHTML = '';
+           if (!comments || comments.length === 0) {
+               commentsPlaceholder.textContent = 'No comments yet.';
+               return;
+           }
+
+           commentsPlaceholder.textContent = '';
+           comments.forEach(comment => {
+               const commentItem = document.createElement('div');
+               commentItem.className = 'comment-item';
+               commentItem.dataset.commentId = comment.id;
+               commentItem.innerHTML = `
+                   <div class="comment-text">${escapeHtml(comment.text)}</div>
+                   <div class="comment-meta">
+                       <span>${escapeHtml(formatCommentCreatedAt(comment.created_at))}</span>
+                       <button type="button" class="comment-delete-btn">Delete</button>
+                   </div>
+                   <div class="comment-item-error field-error"></div>
+               `;
+
+               const deleteButton = commentItem.querySelector('.comment-delete-btn');
+               if (deleteButton) {
+                   deleteButton.addEventListener('click', () => deleteComment(taskId, comment.id, commentItem));
+               }
+
+               commentsList.appendChild(commentItem);
+           });
+       }
+
+       async function submitComment() {
+           if (!commentInput || !taskIdInput) return;
+           if (!currentMode || currentMode !== 'edit') return;
+
+           const taskId = taskIdInput.value;
+           const trimmedText = commentInput.value.trim();
+           if (!trimmedText) {
+               if (commentInputError) {
+                   commentInputError.textContent = 'Comment cannot be blank';
+               }
+               return;
+           }
+
+           if (commentInputError) {
+               commentInputError.textContent = '';
+           }
+
+           try {
+               const response = await fetch(`${API_BASE_URL}/tasks/${encodeURIComponent(taskId)}/comments`, {
+                   method: 'POST',
+                   headers: { 'Content-Type': 'application/json' },
+                   body: JSON.stringify({ text: trimmedText }),
+               });
+
+               if (response.status === 201) {
+                   if (commentInput) {
+                       commentInput.value = '';
+                   }
+                   await fetchAndRenderComments(taskId);
+                   return;
+               }
+
+               const body = await response.json().catch(() => null);
+               const errorMessage =
+                   body?.message ||
+                   body?.error ||
+                   (typeof body?.detail === 'string' ? body.detail : null) ||
+                   (Array.isArray(body?.detail) ? body.detail.map(item => item?.msg || JSON.stringify(item)).join(' ') : null) ||
+                   'Unable to add comment. Please try again.';
+
+               if (commentInputError) {
+                   commentInputError.textContent = errorMessage;
+               }
+           } catch (error) {
+               console.error('Error adding comment:', error);
+               if (commentInputError) {
+                   commentInputError.textContent = 'Network error while adding comment. Please try again.';
+               }
+           }
+       }
+
+       async function deleteComment(taskId, commentId, commentElement) {
+           if (!commentElement) return;
+           const errorEl = commentElement.querySelector('.comment-item-error');
+           if (errorEl) {
+               errorEl.textContent = '';
+           }
+
+           try {
+               const response = await fetch(`${API_BASE_URL}/tasks/${encodeURIComponent(taskId)}/comments/${encodeURIComponent(commentId)}`, {
+                   method: 'DELETE',
+               });
+
+               if (response.status === 204) {
+                   commentElement.remove();
+                   if (commentsList && commentsList.children.length === 0 && commentsPlaceholder) {
+                       commentsPlaceholder.textContent = 'No comments yet.';
+                   }
+                   return;
+               }
+
+               const body = await response.json().catch(() => null);
+               const errorMessage =
+                   body?.message ||
+                   body?.error ||
+                   (typeof body?.detail === 'string' ? body.detail : null) ||
+                   'Unable to delete comment. Please try again.';
+
+               if (errorEl) {
+                   errorEl.textContent = errorMessage;
+               }
+           } catch (error) {
+               console.error('Error deleting comment:', error);
+               if (errorEl) {
+                   errorEl.textContent = 'Network error while deleting comment. Please try again.';
+               }
+           }
        }
 
        function closeModal() {
@@ -608,6 +966,10 @@
                statusSelect.value = task.status || 'ToDo';
                prioritySelect.value = task.priority || 'Medium';
                assigneeInput.value = task.assignee || '';
+               dueDateInput.value = task.due_date || '';
+               setCommentsSectionVisible(true);
+               clearCommentsSection();
+               fetchAndRenderComments(task.id);
            } else {
                currentTask = null;
                taskIdInput.value = '';
@@ -616,6 +978,9 @@
                statusSelect.value = 'ToDo';
                prioritySelect.value = 'Medium';
                assigneeInput.value = '';
+               dueDateInput.value = '';
+               setCommentsSectionVisible(false);
+               clearCommentsSection();
            }
 
            modalOverlay.classList.add('active');
@@ -641,11 +1006,14 @@
            const description = descriptionInput.value.trim();
            const assigneeValue = assigneeInput.value.trim();
            const assignee = assigneeValue === '' ? null : assigneeValue;
+           const dueDateValue = dueDateInput.value.trim();
+           const due_date = dueDateValue === '' ? null : dueDateValue;
            const payload = {
                title,
                description,
                priority: prioritySelect.value,
                assignee,
+               due_date,
            };
  
            const taskId = taskIdInput.value;
@@ -718,6 +1086,13 @@
                newTaskBtn.addEventListener('click', openNewTask);
            }
 
+           if (overdueFilterCheckbox) {
+               overdueFilterCheckbox.addEventListener('change', () => {
+                   showOverdueOnly = overdueFilterCheckbox.checked;
+                   fetchTasks();
+               });
+           }
+ 
            if (modalCloseBtn) {
                modalCloseBtn.addEventListener('click', closeModal);
            }
@@ -739,22 +1114,28 @@
            if (modalForm) {
                modalForm.addEventListener('submit', submitTaskForm);
            }
+
+           if (commentAddBtn) {
+               commentAddBtn.addEventListener('click', submitComment);
+           }
        }
 
        async function fetchTasks() {
            showStatusMessage('Loading tasks...', 'info');
- 
+  
            try {
-               const response = await fetch(`${API_BASE_URL}/tasks`);
+               const queryString = showOverdueOnly ? '?overdue=true' : '';
+               const response = await fetch(`${API_BASE_URL}/tasks${queryString}`);
                if (!response.ok) {
                    throw new Error(`HTTP error! status: ${response.status}`);
                }
- 
+  
                tasks = await response.json();
                renderBoard(tasks);
- 
+  
                if (tasks.length === 0) {
-                   showStatusMessage('No tasks available yet.', 'info');
+                   const emptyMessage = showOverdueOnly ? 'No overdue tasks found.' : 'No tasks available yet.';
+                   showStatusMessage(emptyMessage, 'info');
                } else {
                    clearStatusMessage();
                }
@@ -807,13 +1188,19 @@
  
            const priorityClass = `priority-${task.priority.toLowerCase()}`;
            const assigneeName = task.assignee || 'Unassigned';
+           const pillLabel = task.due_state === 'overdue' ? 'Overdue' : task.due_state === 'completed_late' ? 'Completed late' : '';
+           const pillClass = task.due_state ? `pill-${task.due_state}` : '';
  
            card.innerHTML = `
                <div class="task-card-header">
                    <h3 class="task-title">${escapeHtml(task.title)}</h3>
-                   <span class="task-priority ${priorityClass}">${escapeHtml(task.priority)}</span>
+                   <div class="task-labels">
+                       <span class="task-priority ${priorityClass}">${escapeHtml(task.priority)}</span>
+                       ${pillLabel ? `<span class="task-pill ${pillClass}">${escapeHtml(pillLabel)}</span>` : ''}
+                   </div>
                </div>
                ${task.description ? `<p class="task-description">${escapeHtml(task.description)}</p>` : ''}
+               ${task.due_date ? `<p class="task-due-date">${escapeHtml(task.due_date)}</p>` : ''}
                <div class="task-meta">
                    <div class="task-assignee">
                        <span class="assignee-name">${escapeHtml(assigneeName)}</span>
