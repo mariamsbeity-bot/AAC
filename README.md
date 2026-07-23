@@ -1,76 +1,104 @@
-# Task Tracker API — Module 1
+# Task Tracker API
 
-A learning-project REST API built with **Python + FastAPI**, following ADR-001:
-layered architecture (routes → services → schemas → JSON file storage) with a
-local `tasks.json` file as the persistence layer (added in later steps).
+This repository contains a small FastAPI-based task tracker with a static HTML frontend and supporting midcourse documentation for the submission.
 
-This skeleton currently exposes a single `GET /health` endpoint.
+## What is included
+
+- A FastAPI backend for managing tasks and comments
+- Task CRUD endpoints with filters for status, priority, and overdue items
+- Due-date handling and overdue state calculation
+- Status transition validation for workflow rules
+- Comment support with task-scoped create/list/delete operations
+- A lightweight kanban-style frontend in `frontend/index.html`
+- Submission documentation under `docs/midcourse/`
+- Automated tests for backend behavior
+
+## Project structure
+
+- `app/` — backend application code, routes, models, storage, and business rules
+- `frontend/` — static UI for interacting with the API
+- `tests/` — backend test suite
+- `docs/midcourse/` — submission artifacts such as the ADR, reflection, verification notes, prompt log, and user stories
 
 ## Requirements
 
-- Python 3.11+ (3.10 works too)
+- Python 3.11+
+- `pip` and a virtual environment
 
 ## Setup
 
 ```bash
-# 1. Create and activate a virtual environment
-python -m venv venv
+# From the project root
+python -m venv .venv
 
-# Linux/macOS
-source venv/bin/activate
 # Windows PowerShell
-.\venv\Scripts\Activate.ps1
+.\.venv\Scripts\Activate.ps1
 
-# 2. Install dependencies
+# Install dependencies
 pip install -r requirements.txt
-
-# 3. Create your local environment file
-cp .env.example .env        # PowerShell: Copy-Item .env.example .env
 ```
 
-## Run the server
+## Run the backend
 
 ```bash
 uvicorn app.main:app --reload --port 8000
 ```
 
-The backend will be available at http://127.0.0.1:8000.
+The API will be available at:
 
-## Open the frontend
+- http://127.0.0.1:8000
+- Swagger UI: http://127.0.0.1:8000/docs
+- Health endpoint: http://127.0.0.1:8000/health
 
-The frontend is a plain static HTML app in `frontend/index.html`.
+## Run the frontend
 
-Option 1: open `frontend/index.html` directly in your browser.
+The frontend is a static page served from `frontend/index.html`.
 
-Option 2: serve the frontend from a simple local server and open the page at `http://127.0.0.1:5500`:
+Option 1: open the file directly in a browser.
+
+Option 2: serve it locally:
 
 ```bash
 cd frontend
 python -m http.server 5500
 ```
 
+Then open:
+
+- http://127.0.0.1:5500/index.html
+
 The frontend expects the backend to be running at `http://127.0.0.1:8000`.
 
-## Run tests
+## Run the tests
 
-From the project root run:
+From the project root:
 
 ```bash
 pytest -q
 ```
 
-## Test the health endpoint
+## Submission docs
 
-```bash
-curl http://127.0.0.1:8000/health
-```
+The `docs/midcourse/` folder includes the supporting material for this submission, including:
 
-Expected response shape:
+- `mini-adr.md` — architecture decision notes
+- `reflection.md` — implementation reflection
+- `verification.md` — verification summary
+- `prompt-log.md` — prompt and iteration log
+- `user-stories.md` — user requirements and acceptance coverage
 
-```json
-{ "status": "ok", "timestamp": "2026-07-12T08:30:00.000000+00:00" }
-```
+## API summary
 
-## API docs (Swagger)
+Key endpoints include:
 
-Open in your browser: <http://127.0.0.1:8000/docs>
+- `GET /health`
+- `POST /tasks`
+- `GET /tasks`
+- `GET /tasks/{task_id}`
+- `PATCH /tasks/{task_id}`
+- `DELETE /tasks/{task_id}`
+- `POST /tasks/{task_id}/comments`
+- `GET /tasks/{task_id}/comments`
+- `DELETE /tasks/{task_id}/comments/{comment_id}`
+
+This project is intended as a working task tracker submission rather than a single-endpoint skeleton.
