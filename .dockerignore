@@ -1,0 +1,34 @@
+# Secrets / env
+.env
+.env.*
+
+# Version control
+.git
+.gitignore
+
+# Virtual environments
+venv/
+.venv/
+
+# Python artifacts
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Node (not currently used, excluded defensively)
+node_modules/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# OS / editor files
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Not needed in the runtime image
+frontend/
+tests/
+docs/

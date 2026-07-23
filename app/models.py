@@ -32,6 +32,21 @@ class TaskCreate(BaseModel):
     @field_validator("title")
     @classmethod
     def validate_title(cls, value: str) -> str:
+        """Normalize and validate the task title.
+
+        Strips leading/trailing whitespace, then rejects blank or overly
+        long titles.
+
+        Args:
+            value: The raw title string from the request payload.
+
+        Returns:
+            str: The stripped title.
+
+        Raises:
+            ValueError: If the stripped title is empty, or longer than 200
+                characters. Pydantic converts this into a 422 response.
+        """
         value = value.strip()
         if not value:
             raise ValueError("title must not be blank")
@@ -53,6 +68,26 @@ class TaskUpdate(BaseModel):
     @field_validator("title")
     @classmethod
     def validate_title(cls, value: Optional[str]) -> Optional[str]:
+        """Normalize and validate the task title, if provided.
+
+        None is passed through unchanged, which allows a PATCH payload to
+        omit ``title`` without triggering validation. Otherwise, strips
+        leading/trailing whitespace and rejects blank or overly long
+        titles.
+
+        Args:
+            value: The raw title string from the request payload, or None
+                if the field was not supplied.
+
+        Returns:
+            Optional[str]: None if not supplied, otherwise the stripped
+                title.
+
+        Raises:
+            ValueError: If a supplied title is blank after stripping, or
+                longer than 200 characters. Pydantic converts this into a
+                422 response.
+        """
         if value is None:
             return value
         value = value.strip()
@@ -78,6 +113,18 @@ class TaskResponse(BaseModel):
 
     @computed_field
     def due_state(self) -> Optional[str]:
+        """Derive the task's overdue state; not a stored field.
+
+        Computed fresh on every access/serialization against the current
+        UTC date, so the same stored task can report a different
+        ``due_state`` across two calls made on different days.
+
+        Returns:
+            Optional[str]: None if there is no due date or the due date is
+                today or in the future; ``"overdue"`` if the due date is
+                in the past and status is not Done; ``"completed_late"``
+                if the due date is in the past and status is Done.
+        """
         if self.due_date is None:
             return None
         utc_today = datetime.now(timezone.utc).date()
@@ -94,6 +141,20 @@ class CommentCreate(BaseModel):
     @field_validator("text")
     @classmethod
     def validate_text(cls, value: str) -> str:
+        """Normalize and validate comment text.
+
+        Strips leading/trailing whitespace and rejects a blank result.
+
+        Args:
+            value: The raw comment text from the request payload.
+
+        Returns:
+            str: The stripped comment text.
+
+        Raises:
+            ValueError: If the stripped text is empty. Pydantic converts
+                this into a 422 response.
+        """
         value = value.strip()
         if not value:
             raise ValueError("text must not be blank")
