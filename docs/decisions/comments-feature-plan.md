@@ -1,0 +1,14 @@
+| Section | Label | Evidence | Minimal correction |
+|---|---|---|---|
+| Data Model | Right | It identifies the existing `text`-based models in `app/models.py`, the separate in-memory `app/comments_storage.py`, UUID4 hex IDs, UTC timestamps, `extra="forbid"`, and manual cascade deletion in `app/main.py`. | No substantive correction needed. Keep the UUID-format decision explicit. |
+| API Routes | Right | It matches the existing route shape: `POST`, `GET`, and `DELETE` under `/tasks/{task_id}/comments`, including 201/200/204 responses, missing-task handling, wrong-task ownership checks, and cascade behavior. | No substantive correction needed. |
+| Tests | Missing | It correctly follows the repo’s `pytest`/`TestClient` style and existing `tests/test_comments.py` organization. However, `test_comment_id_is_not accepted_from_request_body` is not a valid Python test function name because it contains a space. The plan also does not explicitly test that trimmed `author` and `body` values are returned, despite proposing trimming. | Rename the invalid test to something like `test_comment_id_is_not_accepted_from_request_body`, and add a normalization test if trimming is retained. |
+| Frontend Changes | Right | It correctly identifies the single-file frontend at `frontend/index.html`, the existing edit-modal comment workflow, current `text` input, delete behavior, empty state, escaped rendering, and `type="button"` requirement. | No substantive correction needed. |
+| Migration Notes | Right | It accurately describes the repository’s in-memory dictionaries, lack of durable schema migration, current `text` payload, required frontend/test updates, and `extra="forbid"` compatibility consequence. | No substantive correction needed. |
+| Open Questions | Right | It presents multiple real decisions grounded in the repo: UUID formatting, trimming, legacy `text` compatibility, persistence, authentication, pagination, and concurrency. It exceeds the requirement for at least three questions. | No substantive correction needed. |
+
+### Three-line generic vs repo-grounded comparison
+
+- Biggest difference: the generic plan describes possible architectures and leaves file structure, storage, routes, and test style conditional; the repo-grounded plan names the actual files, existing `text` contract, in-memory stores, current routes, frontend modal, and test fixture.
+- Plan I would hand to a teammate and why: the repo-grounded plan, because it identifies the exact compatibility change from `text` to `author`/`body`, the files and tests affected, and the existing cascade and storage conventions.
+- A task shape where generic chat is enough: an early product-scoping task for a new app where repository structure, persistence, API conventions, and existing clients are not yet established.
