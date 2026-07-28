@@ -195,3 +195,50 @@ Key endpoints include:
 - `DELETE /tasks/{task_id}/comments/{comment_id}`
 
 This project is intended as a working task tracker submission rather than a single-endpoint skeleton.
+
+## Final Project
+
+Branch reviewed: `final-project`
+
+### What this submission demonstrates
+- Existing Task Tracker app still runs inside the intended course scope.
+- CI runs the pytest suite on push and/or pull request.
+- Docker image builds and runs with `/health` returning 200.
+- AI review, security, and ownership evidence is in `docs/`.
+
+### How to run locally
+
+```bash
+python -m venv venv
+# Windows: venv\Scripts\Activate.ps1
+# macOS/Linux: source venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
+```
+
+- API: http://127.0.0.1:8000
+- Health check: http://127.0.0.1:8000/health
+
+### How to run tests
+
+```bash
+pytest -v
+```
+
+### How to run with Docker
+
+```bash
+docker build -t task-tracker .
+docker run -p 8000:8000 task-tracker
+curl http://localhost:8000/health
+```
+
+### Evidence files
+- docs/release-evidence.md
+- docs/final-ai-review.md
+- docs/ai-playbook.md
+
+### AI assistance summary
+AI helped draft or review: [TO COMPLETE AFTER STEP 3]
+I verified the work by: [TO COMPLETE AFTER STEP 3]
+One AI suggestion I rejected or corrected: [TO COMPLETE AFTER STEP 3]
