@@ -239,6 +239,9 @@ curl http://localhost:8000/health
 - docs/ai-playbook.md
 
 ### AI assistance summary
-AI helped draft or review: [TO COMPLETE AFTER STEP 3]
-I verified the work by: [TO COMPLETE AFTER STEP 3]
-One AI suggestion I rejected or corrected: [TO COMPLETE AFTER STEP 3]
+AI helped draft or review: CI workflow review, Docker safety check, security findings, 
+and the due-dates code review mini-log.
+I verified the work by: running pytest (40 passed), Docker /health check, manual DELETE 
+curl test, and reading diffs directly before grading each finding.
+One AI suggestion I rejected or corrected: SEC-02 (add authentication) — rejected as 
+explicitly out of course scope; graded as False Positive with documented reasoning.
